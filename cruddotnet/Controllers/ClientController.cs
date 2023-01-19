@@ -1,35 +1,43 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ClientController : ControllerBase {
 
     private readonly ContextCrud _context;
+    private readonly IMapper _mapper;
 
-    public ClientController(ContextCrud context){
+    public ClientController(ContextCrud context, IMapper mapper){
         this._context = context;
+        this._mapper = mapper;
     }
 
     [HttpGet()]
-    public IActionResult GetClients(){
+    public async Task<IActionResult> GetClients(){
         try
         {
-            var clientes = this._context.Cliente.ToListAsync();
-            return Ok(1);
+            var clientes = await this._context.Cliente.ToArrayAsync();
+            // var clientInfo = this._mapper.Map<ClientViewModel>(clientes);
+            Console.WriteLine(clientes);
+            return Ok(clientes);
         }
-        catch (System.Exception)
+        catch (Exception ex)
         {
-            return BadRequest();
+            return BadRequest(ex.GetBaseException());
+
             throw;
         }
     }
 
     [HttpPost()]
-    public async Task<IActionResult> CreateClient(Client clients){
+    public async Task<IActionResult> CreateClient(ClientInputModel clients){
         try
         {
-            this._context.Add(clients);
+            var client = this._mapper.Map<Client>(clients);
+
+            this._context.Add(client);
             var result = await this._context.SaveChangesAsync();
             return Ok(result);
         }

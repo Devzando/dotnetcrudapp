@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +7,7 @@ var connectionString = builder.Configuration.GetConnectionString("SqliteConnecti
 builder.Services.AddDbContext<ContextCrud>(options => options.UseSqlite(connectionString));
 
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(typeof(ClientMapper));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
